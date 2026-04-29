@@ -23,6 +23,37 @@ MAIL_PASSWORD = 'kjkxgeegjgxbuaqs'
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 db.init_app(app)
 
+# Database Initialization & Seeding
+def seed_database():
+    import csv
+    csv_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'student_list.csv')
+    if not os.path.exists(csv_file):
+        print("Seeding skipped: student_list.csv not found.")
+        return
+
+    with app.app_context():
+        db.create_all()
+        if Student.query.first():
+            print("Seeding skipped: Database already contains students.")
+            return
+
+        with open(csv_file, 'r', encoding='utf-8') as f:
+            reader = csv.reader(f)
+            next(reader) # skip header
+            for row in reader:
+                if len(row) >= 2:
+                    usn = row[0].strip()
+                    name = row[1].strip()
+                    email = f"{usn.lower()}@gmail.com"
+                    new_student = Student(usn=usn, name=name, email=email)
+                    db.session.add(new_student)
+            db.session.commit()
+            print("Database seeded successfully with student list.")
+
+with app.app_context():
+    db.create_all()
+seed_database()
+
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() == 'pdf'
 
@@ -312,6 +343,4 @@ def admin_dashboard():
     return render_template('admin_dashboard.html', student_data=student_data)
 
 if __name__ == '__main__':
-    with app.app_context():
-        db.create_all()
     app.run(debug=True, port=5000)

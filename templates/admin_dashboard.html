@@ -1,0 +1,142 @@
+{% extends 'base.html' %}
+
+{% block container_class %}container-fluid{% endblock %}
+
+{% block content %}
+<div class="dashboard-header anim-fade-up">
+    <h2>Admin Dashboard</h2>
+    <p>Review student certificates and submissions.</p>
+</div>
+
+<!-- Note: The main wrapper does not have data-tilt so it doesn't wobble the whole screen, only the individual cards do -->
+<div class="anim-fade-up stagger-1" style="margin-top: 1rem;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 15px;">
+        <h3 style="margin: 0; color: #1e293b;">Student Submissions</h3>
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <div class="search-container" style="position: relative;">
+                <input type="text" id="searchInput" onkeyup="filterStudents()" placeholder="Search Name or USN..." 
+                       style="padding: 10px 15px 10px 35px; border-radius: 20px; border: 1px solid #cbd5e1; outline: none; width: 250px; font-family: 'Inter', sans-serif; font-size: 0.9rem; transition: border-color 0.2s;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%);"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            </div>
+            <span class="badge" id="studentCountBadge" style="font-size: 0.9rem;">{{ student_data|length }} Students</span>
+        </div>
+    </div>
+    {% if student_data %}
+    <div class="student-grid-wrapper">
+        <div class="student-grid">
+            {% for data in student_data %}
+            <div class="student-grid-card" data-tilt data-tilt-glare="true" data-tilt-max-glare="0.2"
+                data-tilt-scale="1.05" onclick="openModal(this)">
+                <div class="sg-avatar-large">
+                    {{ data.user.name[0].upper() }}
+                </div>
+                <div class="sg-info text-center">
+                    <h4 title="{{ data.user.name }}">{{ data.user.name }}</h4>
+                    <p>{{ data.user.usn }}</p>
+                </div>
+                <div class="sg-stats text-center" style="margin-top: 10px;">
+                    <span class="badge">{{ data.certificates|length }} Certificate(s)</span>
+                </div>
+                
+                <!-- Hidden Data for Modal Injection -->
+                <div class="hidden-cert-data" style="display: none;">
+                    <span class="d-name">{{ data.user.name }}</span>
+                    <span class="d-usn">{{ data.user.usn }}</span>
+                    <div class="d-certs">
+                    {% if data.certificates %}
+                        <div class="modal-certs">
+                        {% for cert in data.certificates %}
+                            <div class="modal-cert-item">
+                                <div class="modal-cert-details">
+                                    <strong title="{{ cert.title }}">{{ cert.title }}</strong>
+                                    <span class="modal-date">{{ cert.upload_date.strftime('%Y-%m-%d') }}</span>
+                                </div>
+                                <a href="{{ url_for('uploaded_file', filename=cert.file_path) }}" target="_blank"
+                                    class="btn-sm btn-primary" style="padding: 6px 12px; font-size: 0.8rem;">View PDF</a>
+                            </div>
+                        {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-muted text-center" style="margin-top: 20px;">No uploads yet.</p>
+                    {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% else %}
+    <div class="empty-state text-center" style="padding: 3rem;">
+        <p class="text-muted">No students registered yet.</p>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Glassmorphism Modal -->
+<div id="studentModal" class="modal-overlay">
+    <div class="modal-content glass-panel">
+        <button class="modal-close" onclick="closeModal()">×</button>
+        <div class="modal-header">
+            <h3 id="modalName">Student Name</h3>
+            <p id="modalUsn" class="text-muted">USN</p>
+        </div>
+        <div id="modalBody">
+            <!-- Certificates injected here by JS -->
+        </div>
+    </div>
+</div>
+
+<script>
+    function openModal(cardElement) {
+        // Extract data from hidden div
+        const name = cardElement.querySelector('.d-name').innerHTML;
+        const usn = cardElement.querySelector('.d-usn').innerHTML;
+        const certsHtml = cardElement.querySelector('.d-certs').innerHTML;
+        
+        // Inject into modal
+        document.getElementById('modalName').innerHTML = name;
+        document.getElementById('modalUsn').innerHTML = usn;
+        document.getElementById('modalBody').innerHTML = certsHtml;
+        
+        // Show Modal
+        const modal = document.getElementById('studentModal');
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden'; // Stop background scrolling
+    }
+    
+    function closeModal() {
+        const modal = document.getElementById('studentModal');
+        modal.classList.remove('active');
+        document.body.style.overflow = 'auto'; // Restore scrolling
+    }
+    
+    // Close modal if user clicks outside the glass panel
+    document.getElementById('studentModal').addEventListener('click', function(e) {
+        if(e.target === this) {
+            closeModal();
+        }
+    });
+
+    // Real-time Search Filter
+    function filterStudents() {
+        const input = document.getElementById('searchInput').value.toLowerCase();
+        const cards = document.getElementsByClassName('student-grid-card');
+        let visibleCount = 0;
+        
+        for (let i = 0; i < cards.length; i++) {
+            const name = cards[i].querySelector('.d-name').innerText.toLowerCase();
+            const usn = cards[i].querySelector('.d-usn').innerText.toLowerCase();
+            
+            if (name.includes(input) || usn.includes(input)) {
+                cards[i].style.display = "";
+                visibleCount++;
+            } else {
+                cards[i].style.display = "none";
+            }
+        }
+        
+        // Update badge
+        document.getElementById('studentCountBadge').innerText = visibleCount + ' Student' + (visibleCount !== 1 ? 's' : '');
+    }
+</script>
+{% endblock %}

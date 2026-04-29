@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="glass-panel anim-fade-up stagger-1" style="max-width: 450px; margin: 4rem auto;" data-tilt data-tilt-glare="true" data-tilt-max-glare="0.2" data-tilt-scale="1.02">
+    <h2 class="text-center">Student Login</h2>
+    <p class="text-center text-muted mb-4">Enter your Roll Number to receive an OTP to your email.</p>
+    <form method="POST" action="{{ url_for('student_login') }}">
+        <div class="form-group">
+            <label for="usn">USN (Roll Number)</label>
+            <input type="text" id="usn" name="usn" required placeholder="e.g. 4MH23CA001" autocomplete="off">
+        </div>
+        <button type="submit" class="btn-primary w-100">Send OTP</button>
+    </form>
+</div>
+{% endblock %}

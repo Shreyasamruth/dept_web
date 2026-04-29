@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="glass-panel anim-fade-up stagger-1" style="max-width: 450px; margin: 4rem auto;" data-tilt data-tilt-glare="true" data-tilt-max-glare="0.2" data-tilt-scale="1.02">
+    <h2 class="text-center">Admin Login</h2>
+    <form method="POST" action="{{ url_for('admin_login') }}">
+        <div class="form-group">
+            <label for="username">Username</label>
+            <input type="text" id="username" name="username" required placeholder="Enter admin username">
+        </div>
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" required placeholder="Enter password">
+        </div>
+        <button type="submit" class="btn-primary w-100">Login to Dashboard</button>
+    </form>
+    <div class="text-center mt-4">
+        <p class="text-muted text-sm">Need an admin account? <a href="{{ url_for('admin_register') }}">Register here</a></p>
+    </div>
+</div>
+{% endblock %}

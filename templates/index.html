@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="dashboard-header text-center anim-fade-up" style="margin-bottom: 3rem;">
+    <h2>Submit Your Certificate</h2>
+    <p>Select your Roll Number and upload your hackathon or academic certificates.</p>
+</div>
+
+<div class="glass-panel anim-fade-up stagger-1" style="max-width: 600px; margin: 0 auto;" data-tilt data-tilt-glare="true" data-tilt-max-glare="0.2" data-tilt-scale="1.02">
+    <form method="POST" action="{{ url_for('student_portal') }}" enctype="multipart/form-data" id="uploadForm">
+        <!-- Removed USN dropdown as student is now authenticated -->
+        <div class="form-group">
+            <label for="title">Certificate Title</label>
+            <input type="text" id="title" name="title" required placeholder="e.g. 1st Place - Local Hackathon">
+        </div>
+        <div class="form-group">
+            <label for="description">Description (Optional)</label>
+            <textarea id="description" name="description" rows="3" placeholder="Briefly describe the certificate..."></textarea>
+        </div>
+        <div class="form-group file-upload-wrapper">
+            <label for="certificate" class="file-label">
+                <span id="file-chosen">Choose a PDF file...</span>
+                <div class="btn-secondary">Browse</div>
+            </label>
+            <input type="file" id="certificate" name="certificate" accept="application/pdf" required class="hidden-input">
+        </div>
+        <p class="text-muted text-sm mt-2 text-center">Only .pdf files are allowed (Max 16MB)</p>
+        <button type="submit" class="btn-primary w-100 mt-4">Upload Certificate</button>
+    </form>
+</div>
+{% endblock %}

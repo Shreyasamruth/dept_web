@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="landing-container anim-fade-up">
+    <div class="landing-header text-center anim-fade-up stagger-1">
+        <h1>Welcome to DEPT OF AI</h1>
+        <p class="text-muted">Portal for department activities. Select your portal to continue.</p>
+    </div>
+    
+    <div class="portal-cards anim-fade-up stagger-2">
+        <a href="{{ url_for('student_login') }}" class="portal-card student-card" data-tilt data-tilt-glare="true" data-tilt-max-glare="0.2" data-tilt-scale="1.02">
+            <div class="card-icon">
+                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+                    <path d="M6 12v5c3 3 9 3 12 0v-5"/>
+                </svg>
+            </div>
+            <h3>Student Portal</h3>
+            <p>Upload and manage your hackathon & academic certificates.</p>
+            <span class="btn-card">Enter Student Portal &rarr;</span>
+        </a>
+        
+        <a href="{{ url_for('admin_login') }}" class="portal-card admin-card" data-tilt data-tilt-glare="true" data-tilt-max-glare="0.2" data-tilt-scale="1.02">
+            <div class="card-icon">
+                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                </svg>
+            </div>
+            <h3>Admin Portal</h3>
+            <p>Review student submissions and manage platform data.</p>
+            <span class="btn-card">Enter Admin Portal &rarr;</span>
+        </a>
+    </div>
+</div>
+{% endblock %}

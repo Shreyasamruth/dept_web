@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Certificate Upload Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <nav class="navbar">
+        <a href="{{ url_for('landing') }}" class="logo">DEPT OF AI</a>
+        <div class="nav-links">
+            {% if request.path == '/' %}
+                <!-- No extra links on landing page -->
+            {% elif request.path.startswith('/student') or request.path == '/student_portal' %}
+                <a href="{{ url_for('landing') }}" class="btn-nav">Change Portal</a>
+                {% if session.get('student_id') %}
+                    <div class="user-menu">
+                        <div class="user-trigger">
+                            <div class="acc-symbol">{{ session.get('student_name')[0].upper() }}</div>
+                            <span class="user-greeting">{{ session.get('student_name') }}</span>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+                        </div>
+                        <div class="dropdown-menu">
+                            <div class="dropdown-header">
+                                <p class="dropdown-name">{{ session.get('student_name') }}</p>
+                                <p class="dropdown-usn">{{ session.get('student_usn') }}</p>
+                            </div>
+                            <a href="{{ url_for('student_portal') }}" class="dropdown-item">Upload Certificate</a>
+                            <a href="{{ url_for('student_view', usn=session.get('student_usn')) }}" class="dropdown-item">My Certificates</a>
+                            <div class="dropdown-divider"></div>
+                            <a href="{{ url_for('student_logout') }}" class="dropdown-item text-danger">Logout</a>
+                        </div>
+                    </div>
+                {% else %}
+                    <a href="{{ url_for('student_login') }}" class="btn-nav">Student Login</a>
+                {% endif %}
+            {% else %}
+                <a href="{{ url_for('landing') }}" class="btn-nav">Change Portal</a>
+                {% if session.get('admin_id') %}
+                    <div class="user-menu">
+                        <div class="user-trigger">
+                            <div class="acc-symbol" style="background: #10b981;">{{ session.get('admin_username')[0].upper() }}</div>
+                            <span class="user-greeting">Admin</span>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+                        </div>
+                        <div class="dropdown-menu">
+                            <div class="dropdown-header">
+                                <p class="dropdown-name">{{ session.get('admin_username') }}</p>
+                                <p class="dropdown-usn">Administrator</p>
+                            </div>
+                            <a href="{{ url_for('admin_dashboard') }}" class="dropdown-item">Dashboard</a>
+                            <div class="dropdown-divider"></div>
+                            <a href="{{ url_for('admin_logout') }}" class="dropdown-item text-danger">Logout</a>
+                        </div>
+                    </div>
+                {% else %}
+                    <a href="{{ url_for('admin_login') }}" class="btn-nav">Admin Login</a>
+                {% endif %}
+            {% endif %}
+        </div>
+    </nav>
+
+    <div class="container {% block container_class %}{% endblock %}">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-messages">
+                    {% for category, message in messages %}
+                        <div class="flash {{ category }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </div>
+
+    <div class="shape shape-1"></div>
+    <div class="shape shape-2"></div>
+    <div class="shape shape-3"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.0/vanilla-tilt.min.js"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
